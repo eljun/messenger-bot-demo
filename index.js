@@ -1,20 +1,20 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var request = require('request')
-var app = express()
+var express = require('express');
+var bodyParser = require('body-parser');
+var request = require('request');
+var app = express();
 
-app.set('port', (process.env.PORT || 5000))
+app.set('port', (process.env.PORT || 5000));
 
 // Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({extended: false}));
 
 // Process application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // Index route
 app.get('/', function (req, res) {
     res.send('Hello world, I am a chat bot')
-})
+});
 
 // for Facebook verification
 app.get('/webhook/', function (req, res) {
@@ -22,10 +22,46 @@ app.get('/webhook/', function (req, res) {
         res.send(req.query['hub.challenge'])
     }
     res.send('Error, wrong token')
-})
+});
+
+app.post('/webhook/', function (req, res) {
+    messaging_events = req.body.entry[0].messaging;
+    for (i = 0; i < messaging_events.length; i++) {
+        event = req.body.entry[0].messaging[i];
+        sender = event.sender.id;
+        if (event.message && event.message.text) {
+            text = event.message.text;
+            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
+        }
+    }
+    res.sendStatus(200)
+});
+
+var token = "CAAVZC9CxZCJdkBAAjIocQPyh6vN6217Wvk2fVmhpCmCj8ECSqrepRyjlu14TiFqzdh23DYsyX2MGGQ6gG9taLrO3Io7Dev97AG1pkP0WZCmiO0YHpxEoxgmRomHER0Ds4epGjLyguEnlcoYRYfWr3AL08jBaJ10ky8N3Vo8P18snhzu7faIC8K6ZCY4Rae8ZD";
+
+function sendTextMessage(sender, text) {
+    messageData = {
+        text: text
+    };
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token: token},
+        method: 'POST',
+        json: {
+            recipient: {id: sender},
+            message: messageData
+        }
+    }, function (error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
 
 // Spin up the server
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'), function () {
     console.log('running on port', app.get('port'))
-})
+});
 

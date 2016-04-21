@@ -68,6 +68,8 @@ function sendTextMessage(sender, text) {
     })
 }
 
+sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
+
 function sendGenericMessage(sender) {
     messageData = {
         "attachment": {

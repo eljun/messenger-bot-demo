@@ -47,7 +47,7 @@ app.post('/webhook/', function (req, res) {
 
 var token = "CAAVZC9CxZCJdkBAAjIocQPyh6vN6217Wvk2fVmhpCmCj8ECSqrepRyjlu14TiFqzdh23DYsyX2MGGQ6gG9taLrO3Io7Dev97AG1pkP0WZCmiO0YHpxEoxgmRomHER0Ds4epGjLyguEnlcoYRYfWr3AL08jBaJ10ky8N3Vo8P18snhzu7faIC8K6ZCY4Rae8ZD";
 
-function sendTextMessage(sender, text) {
+function sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
     messageData = {
         text: text
     };
@@ -67,8 +67,6 @@ function sendTextMessage(sender, text) {
         }
     })
 }
-
-sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
 
 function sendGenericMessage(sender) {
     messageData = {
